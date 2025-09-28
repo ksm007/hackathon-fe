@@ -14,7 +14,7 @@ export default function Navbar({ toggleSidebar }: NavbarProps) {
   const [notifications] = useState(3);
   
   return (
-    <header className="h-16 border-b border-gray-200 dark:border-gray-800 px-6 flex items-center justify-between bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl shadow-sm">
+    <header className="fixed top-0 left-0 right-0 h-16 border-b border-gray-200 dark:border-gray-800 px-6 flex items-center justify-between bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl shadow-sm z-50">
       <div className="flex items-center gap-4">
         <Button 
           variant="ghost" 
@@ -36,28 +36,12 @@ export default function Navbar({ toggleSidebar }: NavbarProps) {
             <span className="text-white font-bold text-sm">L</span>
           </motion.div>
           <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-            Learning Platform
+            Learn Hub
           </h1>
         </motion.div>
       </div>
       
-      <div className="flex items-center gap-3">
-        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-          <Button variant="ghost" size="icon" className="relative rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50">
-            <Bell size={18} />
-            {notifications > 0 && (
-              <motion.span 
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                whileHover={{ scale: 1.1 }}
-                className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center shadow-lg"
-              >
-                {notifications}
-              </motion.span>
-            )}
-          </Button>
-        </motion.div>
-      </div>
+     
     </header>
   );
 }

@@ -106,13 +106,23 @@ const NotesPage: React.FC = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-          Study Notes
-        </h1>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-          Browse subjects and their notes
-        </p>
+      <div className="flex items-center gap-4">
+        <motion.img 
+          src="/mascot-owl.png"
+          alt="Study Notes Mascot"
+          className="w-16 h-16 object-contain"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+        />
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            Study Notes
+          </h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            Browse subjects and their notes
+          </p>
+        </div>
       </div>
 
       <div className="w-full">
@@ -240,6 +250,14 @@ const NotesPage: React.FC = () => {
         {notes.length === 0 && !loading && (
           <div className="flex justify-center items-center py-12">
             <Card className="p-8 text-center">
+              <motion.img 
+                src="/mascot-owl.png"
+                alt="No Notes Mascot"
+                className="w-24 h-24 object-contain mx-auto mb-4 opacity-70"
+                initial={{ scale: 0, rotate: -10 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 200, delay: 0.3 }}
+              />
               <div className="text-gray-600 dark:text-gray-400">
                 <h3 className="text-lg font-medium mb-2 text-gray-900 dark:text-gray-100">
                   No notes available

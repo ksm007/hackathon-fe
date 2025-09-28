@@ -5,6 +5,14 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Progress } from '../components/ui/progress';
 import { Input } from '../components/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../components/ui/dialog';
 import { useNavigate } from 'react-router-dom';
 
 interface FileUpload {
@@ -27,71 +35,66 @@ interface FileUpload {
   serverError?: string;
   generating?: boolean;
 }
-import { addFile, getUploads, saveUploads, clearUploads } from '../lib/storage';
-import type { StoredFile } from '../lib/storage';
+
 
 const UploadPage: React.FC = () => {
   const navigate = useNavigate();
   const [files, setFiles] = useState<FileUpload[]>([]);
 
-  useEffect(() => {
-    const fetchUserFiles = async () => {
-      try {
-        const token = localStorage.getItem('access_token'); // Get the user token from storage
-        if (!token) {
-          console.error('No user token found');
-          return;
-        }
-
-        const response = await fetch('http://localhost:8000/pdf/user/all', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch user files');
-        }
-
-        const data = await response.json();
-        // Transform the API response to match our FileUpload interface
-        const transformedFiles = data.pdfs.map((pdf: any) => ({
-          id: pdf.id,
-          name: pdf.original_filename,
-          size: pdf.file_size,
-          type: 'application/pdf',
-          uploadedAt: new Date(pdf.created_at || pdf.updated_at),
-          progress: 100, // Since these are already uploaded files
-          url: pdf.storage_path,
-          subject: 'PDF Document',
-          serverResponse: {
-            pdf_id: pdf.id,
-            filename: pdf.filename,
-            message: 'File uploaded successfully',
-            status: pdf.status
-          }
-        }));
-
-        setFiles(transformedFiles);
-      } catch (error) {
-        console.error('Error fetching user files:', error);
+  const fetchUserFiles = async () => {
+    try {
+      const token = localStorage.getItem('access_token'); // Get the user token from storage
+      if (!token) {
+        console.error('No user token found');
+        return;
       }
-    };
 
-    // Fetch files when component mounts
+      const response = await fetch('http://localhost:8000/pdf/user/all', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch user files');
+      }
+
+      const data = await response.json();
+      // Transform the API response to match our FileUpload interface
+      const transformedFiles = data.pdfs.map((pdf: any) => ({
+        id: pdf.id,
+        name: pdf.original_filename,
+        size: pdf.file_size,
+        type: 'application/pdf',
+        uploadedAt: new Date(pdf.created_at || pdf.updated_at),
+        progress: 100, // Since these are already uploaded files
+        url: pdf.storage_path,
+        subject: 'PDF Document',
+        serverResponse: {
+          pdf_id: pdf.id,
+          filename: pdf.filename,
+          message: 'File uploaded successfully',
+          status: pdf.status
+        }
+      }));
+
+      setFiles(transformedFiles);
+    } catch (error) {
+      console.error('Error fetching user files:', error);
+    }
+  };
+
+  useEffect(() => {
     fetchUserFiles();
-
-    // Also listen for storage updates
-    const onUpdate = () => {
-      const u = getUploads();
-      setFiles(u.map(p => ({ ...p, uploadedAt: new Date(p.uploadedAt) })) as FileUpload[]);
-    };
-    window.addEventListener('app:storage-updated', onUpdate);
-    return () => window.removeEventListener('app:storage-updated', onUpdate);
   }, []);
   const [isDragOver, setIsDragOver] = useState(false);
   const [subject, setSubject] = useState("");
   const [subjectError, setSubjectError] = useState("");
+  const [showQuizDialog, setShowQuizDialog] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<FileUpload | null>(null);
+  const [numQuestions, setNumQuestions] = useState(5);
+  const [minDifficulty, setMinDifficulty] = useState(1);
+  const [maxDifficulty, setMaxDifficulty] = useState(3);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes';
@@ -127,10 +130,7 @@ const UploadPage: React.FC = () => {
   }, []);
 
   const handleFileUpload = (fileList: File[]) => {
-    if (!subject.trim()) {
-      setSubjectError("Subject name is required before uploading.");
-      return;
-    }
+
     setSubjectError("");
       fileList.forEach((file) => {
       const fileId = Date.now().toString() + Math.random().toString(36);
@@ -157,24 +157,6 @@ const UploadPage: React.FC = () => {
           clearInterval(interval);
           const completed = { ...newFile, progress: 100, url: '#' };
           setFiles(prev => prev.map(f => f.id === fileId ? completed : f));
-          // persist via storage helper
-          try {
-            const toStore: StoredFile = { 
-              ...completed, 
-              uploadedAt: completed.uploadedAt.toISOString(),
-              serverResponse: completed.serverResponse 
-            };
-            addFile(toStore);
-          } catch (err) {
-            console.error('failed to persist upload', err);
-            const current = getUploads().map(u => ({ ...u }));
-            current.push({ 
-              ...completed, 
-              uploadedAt: completed.uploadedAt.toISOString(),
-              serverResponse: completed.serverResponse 
-            });
-            saveUploads(current);
-          }
 
           // If PDF, send as multipart/form-data (field 'file') along with subject
           if (newFile.type === 'application/pdf' && newFile.raw) {
@@ -210,19 +192,8 @@ const UploadPage: React.FC = () => {
                 };
                 setFiles(prev => prev.map(f => f.id === fileId ? updatedFile : f));
                 
-                // Save to storage with server response
-                const toStore: StoredFile = {
-                  id: updatedFile.id,
-                  name: updatedFile.name,
-                  size: updatedFile.size,
-                  type: updatedFile.type,
-                  uploadedAt: updatedFile.uploadedAt.toISOString(),
-                  progress: updatedFile.progress,
-                  url: updatedFile.url,
-                  subject: updatedFile.subject,
-                  serverResponse: data
-                };
-                addFile(toStore);
+                // Refetch the list of files from the server after successful upload
+                await fetchUserFiles();
               } catch (err: any) {
                 setFiles(prev => prev.map(f => f.id === fileId ? { ...f, serverError: err?.message ?? String(err) } : f));
               }
@@ -251,11 +222,7 @@ const UploadPage: React.FC = () => {
   const removeFile = (fileId: string) => {
     const remaining = files.filter(f => f.id !== fileId);
     setFiles(remaining);
-    try {
-      saveUploads(remaining.map(r => ({ ...r, uploadedAt: r.uploadedAt.toISOString() })));
-    } catch (err) {
-      console.error('failed to persist removal', err);
-    }
+    // Note: If you need to delete files from server, add API call here
   };
 
   // Placeholder for quiz generation logic
@@ -286,7 +253,15 @@ const UploadPage: React.FC = () => {
     }
   };
 
-  const handleGenerateQuiz = async (file: FileUpload) => {
+  const handleGenerateQuizClick = (file: FileUpload) => {
+    setSelectedFile(file);
+    setShowQuizDialog(true);
+  };
+
+  const handleGenerateQuiz = async () => {
+    if (!selectedFile) return;
+    const file = selectedFile;
+    
     try {
       setFiles(prev => prev.map(f => 
         f.id === file.id ? { ...f, generating: true } : f
@@ -330,8 +305,8 @@ const UploadPage: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          num_questions: 5,
-          difficulty_range: [1, 3],
+          num_questions: numQuestions,
+          difficulty_range: [minDifficulty, maxDifficulty],
         }),
       });
 
@@ -341,8 +316,10 @@ const UploadPage: React.FC = () => {
 
       const quizData = await response.json();
       
-      // Navigate to quizzes page with the new quiz data
-      navigate('/quizzes', { state: { newQuiz: quizData } });
+      // Close dialog and navigate to quizzes page
+      setShowQuizDialog(false);
+      setSelectedFile(null);
+      navigate('/quizzes', { state: { newQuiz: quizData, shouldRefresh: true } });
     } catch (error) {
       console.error('Failed to generate quiz:', error);
       // Show error in UI
@@ -363,13 +340,23 @@ const UploadPage: React.FC = () => {
       initial="hidden"
       animate="visible"
     >
-      <motion.div variants={itemVariants}>
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          File Uploads
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
-          Upload and manage your learning materials
-        </p>
+      <motion.div variants={itemVariants} className="flex items-center gap-4">
+        <motion.img 
+          src="/mascot-owl.png"
+          alt="File Upload Mascot"
+          className="w-16 h-16 object-contain"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+        />
+        <div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            File Uploads
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">
+            Upload and manage your learning materials
+          </p>
+        </div>
       </motion.div>
 
       {/* Upload Area */}
@@ -394,20 +381,6 @@ const UploadPage: React.FC = () => {
                 <Upload className="h-8 w-8 text-white" />
               </div>
 
-              {/* Subject Name Input */}
-              <div className="space-y-2">
-                <label htmlFor="subject" className="block text-left text-gray-700 dark:text-gray-300 font-medium mb-1">Subject Name <span className="text-red-500">*</span></label>
-                <Input
-                  id="subject"
-                  type="text"
-                  value={subject}
-                  onChange={e => setSubject(e.target.value)}
-                  placeholder="Enter subject name (required)"
-                  required
-                  className="mb-1"
-                />
-                {subjectError && <p className="text-red-500 text-sm">{subjectError}</p>}
-              </div>
 
               <div className="space-y-2">
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -418,21 +391,6 @@ const UploadPage: React.FC = () => {
                 </p>
               </div>
 
-              <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                <span className="flex items-center gap-1">
-                  <FileText className="h-4 w-4" /> Documents
-                </span>
-                <span className="flex items-center gap-1">
-                  <Image className="h-4 w-4" /> Images
-                </span>
-                <span className="flex items-center gap-1">
-                  <Video className="h-4 w-4" /> Videos
-                </span>
-                <span className="flex items-center gap-1">
-                  <Music className="h-4 w-4" /> Audio
-                </span>
-              </div>
-
               <div className="space-y-4">
                 <input
                   type="file"
@@ -441,13 +399,12 @@ const UploadPage: React.FC = () => {
                   className="hidden"
                   ref={fileInputRef}
                   accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.mp4,.avi,.mp3,.wav"
-                  disabled={!subject.trim()}
                 />
-                <Button className="cursor-pointer" onClick={handleChooseFilesClick} disabled={!subject.trim()}>
+                <Button className="cursor-pointer" onClick={handleChooseFilesClick} >
                   Choose Files
                 </Button>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Maximum file size: 100MB
+               
                 </p>
               </div>
             </motion.div>
@@ -462,16 +419,7 @@ const UploadPage: React.FC = () => {
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
               Uploaded Files ({files.length})
             </h2>
-            <Button 
-              variant="outline"
-              onClick={() => {
-                clearUploads();
-                setFiles([]);
-              }}
-              className="text-red-500 hover:text-red-700"
-            >
-              Clear All Files
-            </Button>
+  
           </div>
           
           <div className="space-y-4">
@@ -519,18 +467,13 @@ const UploadPage: React.FC = () => {
                 <div className="flex items-center gap-2">
                   {file.progress === 100 && (
                     <>
-                      <Button variant="ghost" size="sm">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Download className="h-4 w-4" />
-                      </Button>
+      
                                       {/* Show Generate Quiz for all PDFs */}
                       {file.type === 'application/pdf' && (
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          onClick={() => handleGenerateQuiz(file)}
+                          onClick={() => handleGenerateQuizClick(file)}
                           disabled={file.generating}
                         >
                           {file.generating ? 'Generating...' : 'Generate Quiz'}
@@ -538,21 +481,21 @@ const UploadPage: React.FC = () => {
                       )}
                     </>
                   )}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeFile(file.id)}
-                    className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+
                 </div>
               </motion.div>
             ))}
             
             {files.length === 0 && (
               <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-                <Upload className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <motion.img 
+                  src="/mascot-owl.png"
+                  alt="No Files Mascot"
+                  className="w-24 h-24 object-contain mx-auto mb-4 opacity-70"
+                  initial={{ scale: 0, rotate: -10 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: "spring", stiffness: 200, delay: 0.3 }}
+                />
                 <p>No files uploaded yet</p>
                 <p className="text-sm">Upload your first file to get started</p>
               </div>
@@ -607,6 +550,81 @@ const UploadPage: React.FC = () => {
           </Card>
         </div>
       </motion.div>
+
+      {/* Quiz Generation Dialog */}
+      <Dialog open={showQuizDialog} onOpenChange={setShowQuizDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Generate Quiz</DialogTitle>
+            <DialogDescription>
+              Configure your quiz settings for "{selectedFile?.name}"
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Number of Questions</label>
+              <Input
+                type="number"
+                min="1"
+                max="20"
+                value={numQuestions}
+                onChange={(e) => setNumQuestions(parseInt(e.target.value) || 5)}
+                placeholder="5"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Difficulty Range</label>
+              <div className="flex gap-2 items-center">
+                <div className="flex-1">
+                  <label className="text-xs text-gray-500">Min</label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="5"
+                    value={minDifficulty}
+                    onChange={(e) => setMinDifficulty(parseInt(e.target.value) || 1)}
+                    placeholder="1"
+                  />
+                </div>
+                <span className="text-gray-400">to</span>
+                <div className="flex-1">
+                  <label className="text-xs text-gray-500">Max</label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="5"
+                    value={maxDifficulty}
+                    onChange={(e) => setMaxDifficulty(parseInt(e.target.value) || 3)}
+                    placeholder="3"
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-gray-500">
+                Difficulty scale: 1 (Easy) to 5 (Very Hard)
+              </p>
+              {minDifficulty > maxDifficulty && (
+                <p className="text-xs text-red-500">
+                  Minimum difficulty cannot be greater than maximum difficulty
+                </p>
+              )}
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowQuizDialog(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleGenerateQuiz}
+              disabled={selectedFile?.generating || minDifficulty > maxDifficulty}
+            >
+              {selectedFile?.generating ? 'Generating...' : 'Generate Quiz'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 };

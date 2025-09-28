@@ -2,12 +2,10 @@ import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn } from "../../lib/utils";
 import { 
-  BookOpen, 
   Home, 
   FolderUp, 
   FileText, 
   BrainCircuit, 
-  Settings, 
   ChevronLeft, 
   ChevronRight, 
   Shield 
@@ -27,12 +25,10 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
 
   const navItems = [
     { icon: Home, label: "Dashboard", path: "/" },
-    { icon: BookOpen, label: "Subjects", path: "/subjects" },
     { icon: FolderUp, label: "Uploads", path: "/uploads" },
     { icon: FileText, label: "Notes", path: "/notes" },
     { icon: BrainCircuit, label: "Quizzes", path: "/quizzes" },
     { icon: Shield, label: "Campus Safety", path: "/campus-safety" },
-    { icon: Settings, label: "Settings", path: "/settings" },
   ];
 
   return (

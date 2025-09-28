@@ -439,13 +439,23 @@ const QuizzesPage: React.FC = () => {
       initial="hidden"
       animate="visible"
     >
-      <motion.div variants={itemVariants}>
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-          Practice Quizzes
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
-          Test your knowledge with interactive quizzes
-        </p>
+      <motion.div variants={itemVariants} className="flex items-center gap-4">
+        <motion.img 
+          src="/mascot-owl.png"
+          alt="Practice Quizzes Mascot"
+          className="w-16 h-16 object-contain"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+        />
+        <div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+            Practice Quizzes
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">
+            Test your knowledge with interactive quizzes
+          </p>
+        </div>
       </motion.div>
 
       {/* Stats Cards */}
@@ -651,14 +661,7 @@ const QuizzesPage: React.FC = () => {
                         <RotateCcw className="h-4 w-4" />
                       </Button>
                     )}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-red-500 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-950/20"
-                      onClick={() => setDeleteQuizId(quiz.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+
                   </div>
                 </div>
               </Card>
@@ -695,7 +698,14 @@ const QuizzesPage: React.FC = () => {
       {filteredQuizzes.length === 0 && (
         <motion.div variants={itemVariants}>
           <Card className="p-12 text-center">
-            <Trophy className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+            <motion.img 
+              src="/mascot-owl.png"
+              alt="No Quizzes Mascot"
+              className="w-24 h-24 object-contain mx-auto mb-4 opacity-70"
+              initial={{ scale: 0, rotate: -10 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 200, delay: 0.3 }}
+            />
             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
               No quizzes found
             </h3>

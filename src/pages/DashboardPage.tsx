@@ -97,9 +97,26 @@ export default function DashboardPage() {
         transition={{ duration: 0.6 }}
         className="text-center mb-16"
       >
-        <h1 className="text-6xl font-bold text-gray-900 dark:text-white mb-6">
-          Welcome Back
-        </h1>
+        <motion.div
+          className="flex items-center justify-center gap-6 mb-6"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 200, delay: 0.3 }}
+        >
+          <motion.img 
+            src="/mascot-dashboard.png"
+            alt="Welcome Dashboard Mascot"
+            className="w-20 h-20 object-contain"
+            whileHover={{ 
+              scale: 1.1, 
+              rotate: [0, -5, 5, 0],
+              transition: { duration: 0.5 }
+            }}
+          />
+          <h1 className="text-6xl font-bold text-gray-900 dark:text-white">
+            Welcome Back
+          </h1>
+        </motion.div>
         <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
           Choose what you'd like to do today. Your learning journey continues
           here.

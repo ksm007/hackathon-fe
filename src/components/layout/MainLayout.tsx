@@ -8,13 +8,13 @@ export default function MainLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-950 dark:via-blue-950 dark:to-slate-900">
+    <div className="flex min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-950 dark:via-blue-950 dark:to-slate-900 pt-16">
+      <Navbar 
+        sidebarCollapsed={sidebarCollapsed} 
+        toggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)} 
+      />
       <Sidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
       <div className="flex-1 flex flex-col">
-        <Navbar 
-          sidebarCollapsed={sidebarCollapsed} 
-          toggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)} 
-        />
         <main className="flex-1 p-6 overflow-auto">
           <div className="max-w-7xl mx-auto">
             <Outlet />

@@ -66,16 +66,16 @@ export default function SignupPage() {
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-600 to-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+              className="mx-auto mb-6"
             >
-              <motion.span 
-                className="text-white font-bold text-2xl"
+              <motion.img 
+                src="/mascot.png"
+                alt="LearnHub Mascot"
+                className="w-24 h-24 object-contain drop-shadow-lg"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
-              >
-                L
-              </motion.span>
+              />
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 10 }}

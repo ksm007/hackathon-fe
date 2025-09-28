@@ -142,10 +142,14 @@ export default function Chatbot({ initialOpen = false, initialMessages, title = 
 
         <button
           onClick={() => setOpen((v) => !v)}
-          className="w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-xl"
+          className="w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-xl hover:scale-110 transition-transform duration-200"
           aria-label="Toggle ASU Safety Chat"
         >
-          💬
+          <img 
+            src="/mascot-chat.png"
+            alt="Chat Assistant"
+            className="w-13 h-13 object-contain"
+          />
         </button>
       </div>
     </div>
