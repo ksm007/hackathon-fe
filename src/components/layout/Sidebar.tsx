@@ -31,6 +31,10 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
     { icon: Shield, label: "Campus Safety", path: "/campus-safety" },
   ];
 
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <motion.aside 
       animate={{ width: collapsed ? 70 : 240 }}
@@ -108,9 +112,45 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
             </motion.li>
           ))}
         </ul>
+        
+        {/* Logout Button */}
+        {user && (
+          <div className="px-3 pt-4">
+            <motion.button
+              onClick={handleLogout}
+              className={cn(
+                "w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group relative overflow-hidden",
+                "hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 dark:hover:from-red-950 dark:hover:to-red-900 hover:shadow-md text-red-600 dark:text-red-400"
+              )}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <motion.div
+                whileHover={{ rotate: 5 }}
+                className="relative z-10"
+              >
+                <LogOut size={20} className="min-w-[20px]" />
+              </motion.div>
+              
+              <motion.span 
+                animate={{ opacity: collapsed ? 0 : 1 }}
+                transition={{ duration: 0.3, delay: collapsed ? 0 : 0.1 }}
+                className="whitespace-nowrap font-medium relative z-10 group-hover:translate-x-1 transition-transform duration-200"
+              >
+                {!collapsed && "Logout"}
+              </motion.span>
+              
+              {/* Hover effect */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-red-600/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                initial={false}
+              />
+            </motion.button>
+          </div>
+        )}
       </nav>
 
-      {/* Footer: user / login / logout */}
+      {/* Footer: user info */}
       <div className="p-3 border-t border-gray-200 dark:border-gray-800">
         {user ? (
           <div className="flex items-center gap-3">
@@ -121,9 +161,6 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
                 <div className="text-xs text-gray-500 truncate">{user.email}</div>
               </div>
             )}
-            <Button variant="ghost" size="icon" onClick={() => logout()} className="h-8 w-8">
-              <LogOut size={16} />
-            </Button>
           </div>
         ) : (
           <div className="flex items-center justify-center">
