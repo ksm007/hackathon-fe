@@ -36,7 +36,7 @@ export default function Navbar({ toggleSidebar }: NavbarProps) {
             <span className="text-white font-bold text-sm">L</span>
           </motion.div>
           <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-            Learn Hub
+            LearnNest
           </h1>
         </motion.div>
       </div>

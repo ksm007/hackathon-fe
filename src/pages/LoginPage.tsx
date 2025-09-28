@@ -57,7 +57,7 @@ export default function LoginPage() {
               transition={{ delay: 0.3 }}
             >
               <CardTitle className="text-3xl font-extrabold bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent">
-                Welcome to LearnHub
+                Welcome to LearnNest
               </CardTitle>
               <CardDescription className="text-base mt-3 text-gray-600 dark:text-gray-400">
                 Enter your credentials to access your learning dashboard ✨

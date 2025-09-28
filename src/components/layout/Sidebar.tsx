@@ -24,11 +24,11 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
   const { user, logout } = useAuth();
 
   const navItems = [
-    { icon: Home, label: "Dashboard", path: "/" },
-    { icon: FolderUp, label: "Uploads", path: "/uploads" },
-    { icon: FileText, label: "Notes", path: "/notes" },
-    { icon: BrainCircuit, label: "Quizzes", path: "/quizzes" },
-    { icon: Shield, label: "Campus Safety", path: "/campus-safety" },
+    { icon: Home, label: "Dashboard", path: "/dashboard" },
+    { icon: FolderUp, label: "Uploads", path: "/dashboard/uploads" },
+    { icon: FileText, label: "Notes", path: "/dashboard/notes" },
+    { icon: BrainCircuit, label: "Quizzes", path: "/dashboard/quizzes" },
+    { icon: Shield, label: "Campus Safety", path: "/dashboard/campus-safety" },
   ];
 
   const handleLogout = () => {
@@ -47,7 +47,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
           transition={{ duration: 0.3, delay: collapsed ? 0 : 0.2 }}
           className="font-extrabold text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
         >
-          {!collapsed && "LearnHub"}
+          {!collapsed && "LearnNest"}
         </motion.h1>
         <motion.button 
           onClick={() => setCollapsed(!collapsed)} 

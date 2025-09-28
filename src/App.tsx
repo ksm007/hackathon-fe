@@ -7,6 +7,7 @@ import {
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import MainLayout from "./components/layout/MainLayout";
+import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -51,7 +52,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (user) {
-    return <Navigate to="/" />;
+    return <Navigate to="/dashboard" />;
   }
 
   return <>{children}</>;
@@ -60,6 +61,15 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 function AppRoutes() {
   return (
     <Routes>
+      {/* Public Routes */}
+      <Route
+        path="/"
+        element={
+          <PublicRoute>
+            <LandingPage />
+          </PublicRoute>
+        }
+      />
       <Route
         path="/login"
         element={
@@ -76,8 +86,10 @@ function AppRoutes() {
           </PublicRoute>
         }
       />
+      
+      {/* Protected Routes */}
       <Route
-        path="/"
+        path="/dashboard"
         element={
           <ProtectedRoute>
             <MainLayout />
@@ -92,6 +104,7 @@ function AppRoutes() {
         <Route path="settings" element={<SettingsPage />} />
         <Route path="campus-safety" element={<CampusSafetyPage />} />
       </Route>
+      
       {/* Catch-all route for 404 errors */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

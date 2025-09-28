@@ -93,8 +93,7 @@ const UploadPage: React.FC = () => {
   const [showQuizDialog, setShowQuizDialog] = useState(false);
   const [selectedFile, setSelectedFile] = useState<FileUpload | null>(null);
   const [numQuestions, setNumQuestions] = useState(5);
-  const [minDifficulty, setMinDifficulty] = useState(1);
-  const [maxDifficulty, setMaxDifficulty] = useState(3);
+  const [difficulty, setDifficulty] = useState(3);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes';
@@ -306,7 +305,7 @@ const UploadPage: React.FC = () => {
         },
         body: JSON.stringify({
           num_questions: numQuestions,
-          difficulty_range: [minDifficulty, maxDifficulty],
+          difficulty_range: [difficulty, difficulty],
         }),
       });
 
@@ -319,7 +318,7 @@ const UploadPage: React.FC = () => {
       // Close dialog and navigate to quizzes page
       setShowQuizDialog(false);
       setSelectedFile(null);
-      navigate('/quizzes', { state: { newQuiz: quizData, shouldRefresh: true } });
+      navigate('/dashboard/quizzes', { state: { newQuiz: quizData, shouldRefresh: true } });
     } catch (error) {
       console.error('Failed to generate quiz:', error);
       // Show error in UI
@@ -575,40 +574,21 @@ const UploadPage: React.FC = () => {
             </div>
             
             <div className="space-y-2">
-              <label className="text-sm font-medium">Difficulty Range</label>
-              <div className="flex gap-2 items-center">
-                <div className="flex-1">
-                  <label className="text-xs text-gray-500">Min</label>
-                  <Input
-                    type="number"
-                    min="1"
-                    max="5"
-                    value={minDifficulty}
-                    onChange={(e) => setMinDifficulty(parseInt(e.target.value) || 1)}
-                    placeholder="1"
-                  />
-                </div>
-                <span className="text-gray-400">to</span>
-                <div className="flex-1">
-                  <label className="text-xs text-gray-500">Max</label>
-                  <Input
-                    type="number"
-                    min="1"
-                    max="5"
-                    value={maxDifficulty}
-                    onChange={(e) => setMaxDifficulty(parseInt(e.target.value) || 3)}
-                    placeholder="3"
-                  />
-                </div>
-              </div>
+              <label className="text-sm font-medium">Difficulty Level</label>
+              <select
+                value={difficulty}
+                onChange={(e) => setDifficulty(parseInt(e.target.value))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value={1}>1 - Easy</option>
+                <option value={2}>2 - Moderate</option>
+                <option value={3}>3 - Medium</option>
+                <option value={4}>4 - Hard</option>
+                <option value={5}>5 - Very Hard</option>
+              </select>
               <p className="text-xs text-gray-500">
-                Difficulty scale: 1 (Easy) to 5 (Very Hard)
+                Select the difficulty level for your quiz questions
               </p>
-              {minDifficulty > maxDifficulty && (
-                <p className="text-xs text-red-500">
-                  Minimum difficulty cannot be greater than maximum difficulty
-                </p>
-              )}
             </div>
           </div>
 
@@ -618,7 +598,7 @@ const UploadPage: React.FC = () => {
             </Button>
             <Button 
               onClick={handleGenerateQuiz}
-              disabled={selectedFile?.generating || minDifficulty > maxDifficulty}
+              disabled={selectedFile?.generating}
             >
               {selectedFile?.generating ? 'Generating...' : 'Generate Quiz'}
             </Button>
