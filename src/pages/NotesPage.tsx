@@ -107,7 +107,7 @@ const NotesPage: React.FC = () => {
       animate={{ opacity: 1 }}
     >
       <div className="flex items-center gap-4">
-        <motion.img 
+        <motion.img
           src="/mascot-owl.png"
           alt="Study Notes Mascot"
           className="w-16 h-16 object-contain"
@@ -184,7 +184,10 @@ const NotesPage: React.FC = () => {
                               : "text-red-600 dark:text-red-400"
                           }`}
                         >
-                          {note.performance_summary.score}%
+                          {note?.performance_summary?.score !== undefined
+                            ? note.performance_summary.score.toFixed(2)
+                            : ""}
+                          %
                         </span>
                       </div>
 
@@ -250,7 +253,7 @@ const NotesPage: React.FC = () => {
         {notes.length === 0 && !loading && (
           <div className="flex justify-center items-center py-12">
             <Card className="p-8 text-center">
-              <motion.img 
+              <motion.img
                 src="/mascot-owl.png"
                 alt="No Notes Mascot"
                 className="w-24 h-24 object-contain mx-auto mb-4 opacity-70"
@@ -292,7 +295,13 @@ const NotesPage: React.FC = () => {
                     {selectedNote?.study_priority}
                   </span>
                 </span>
-                <span>Score: {selectedNote?.performance_summary.score}%</span>
+                <span>
+                  Score:{" "}
+                  {selectedNote?.performance_summary?.score !== undefined
+                    ? selectedNote.performance_summary.score.toFixed(2)
+                    : ""}
+                  %
+                </span>
                 <span>Level: {selectedNote?.performance_summary.level}</span>
                 <span>Study Time: {selectedNote?.estimated_study_time}</span>
                 <span>

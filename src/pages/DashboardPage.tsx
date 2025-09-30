@@ -58,7 +58,7 @@ export default function DashboardPage() {
       description:
         "Upload your study materials and documents for AI processing",
       icon: Upload,
-      href: "/uploads",
+      href: "/dashboard/uploads",
       color: "bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-400",
     },
     {
@@ -66,7 +66,7 @@ export default function DashboardPage() {
       description:
         "View and manage your AI-generated study notes and summaries",
       icon: FileText,
-      href: "/notes",
+      href: "/dashboard/notes",
       color:
         "bg-green-100 text-green-600 dark:bg-green-950 dark:text-green-400",
     },
@@ -75,7 +75,7 @@ export default function DashboardPage() {
       description:
         "Test your knowledge with personalized quizzes and assessments",
       icon: BrainCircuit,
-      href: "/quizzes",
+      href: "/dashboard/quizzes",
       color:
         "bg-purple-100 text-purple-600 dark:bg-purple-950 dark:text-purple-400",
     },
@@ -83,7 +83,7 @@ export default function DashboardPage() {
       title: "Campus Safety",
       description: "Access campus safety resources and emergency information",
       icon: Shield,
-      href: "/campus-safety",
+      href: "/dashboard/campus-safety",
       color: "bg-red-100 text-red-600 dark:bg-red-950 dark:text-red-400",
     },
   ];
@@ -103,14 +103,14 @@ export default function DashboardPage() {
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 200, delay: 0.3 }}
         >
-          <motion.img 
+          <motion.img
             src="/mascot-dashboard.png"
             alt="Welcome Dashboard Mascot"
             className="w-20 h-20 object-contain"
-            whileHover={{ 
-              scale: 1.1, 
+            whileHover={{
+              scale: 1.1,
               rotate: [0, -5, 5, 0],
-              transition: { duration: 0.5 }
+              transition: { duration: 0.5 },
             }}
           />
           <h1 className="text-6xl font-bold text-gray-900 dark:text-white">
