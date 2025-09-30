@@ -289,10 +289,6 @@ We welcome contributions! Please follow these steps:
 - Update documentation as needed
 - Ensure responsive design principles
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 🙏 Acknowledgments
 
 - **React Team** for the amazing framework
@@ -302,13 +298,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Three.js** community for 3D graphics capabilities
 - **Firebase** team for backend services
 
-## 📞 Support
-
-If you have any questions or need help, please:
-
-- 📧 Email: support@learnnest.com
-- 💬 Discord: [Join our community](https://discord.gg/learnnest)
-- 🐛 Issues: [GitHub Issues](https://github.com/ksm007/hackathon-fe/issues)
 
 ---
 

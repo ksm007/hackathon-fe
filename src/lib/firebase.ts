@@ -1,14 +1,13 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-
 // Your Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDkS__6-JMonqXzezWjDRbsgvVN6xjhjBI",
-  authDomain: "hackathon2025-58340.firebaseapp.com",
-  projectId: "hackathon2025-58340",
-  storageBucket: "hackathon2025-58340.firebasestorage.app",
-  messagingSenderId: "343910704855",
-  appId: "1:343910704855:web:90d641be2741b48939f292",
+  apiKey: (import.meta as any).env.VITE_FIREBASE_API_KEY,
+  authDomain: (import.meta as any).env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: (import.meta as any).env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: (import.meta as any).env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: (import.meta as any).env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: (import.meta as any).env.VITE_FIREBASE_APP_ID,
 };
 
 // Initialize Firebase app and Auth
